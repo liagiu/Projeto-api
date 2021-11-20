@@ -2,12 +2,13 @@ package org.serratec.ecommerce.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
+
 import org.serratec.ecommerce.domain.Cliente;
 import org.serratec.ecommerce.dto.ClienteDTO;
 import org.serratec.ecommerce.dto.ClienteLogadoDTO;
+import org.serratec.ecommerce.exception.EmailException;
 import org.serratec.ecommerce.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,9 +45,8 @@ public class ClienteController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<List<Cliente>> obterTodos() {
-		List<Cliente> clientes = clienteService.obterTodos();
-		return ResponseEntity.ok(clientes);
+	public ResponseEntity<List<ClienteLogadoDTO>> obterTodos() {
+		return ResponseEntity.ok(clienteService.obterTodos());
 	}
 	
 	@GetMapping("/{id}")
@@ -60,14 +60,13 @@ public class ClienteController {
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
 	public ResponseEntity<ClienteLogadoDTO> buscar(@PathVariable Long id) {
-		Optional<ClienteLogadoDTO> cliente = Optional.empty();
-		if (cliente.isPresent()) {
-			return ResponseEntity.ok(cliente.get());
+		if (clienteService.buscar(id) == null) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(clienteService.buscar(id));
 	}
 	
-	@PostMapping("/criar")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiOperation(value = "Criar um cliente", notes = "Cria um cliente")
 	@ApiResponses(value = { 
@@ -78,11 +77,15 @@ public class ClienteController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<ClienteDTO> criar(@Valid @RequestBody ClienteLogadoDTO clienteLogadoDTO) {
-		ClienteDTO clienteDTO = clienteService.criar(clienteLogadoDTO);
-		
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id").buildAndExpand(clienteDTO.getId()).toUri();
-		return ResponseEntity.created(uri).body(clienteDTO);
+	public ResponseEntity<?> criar(@Valid @RequestBody ClienteDTO clienteDTO) {
+		try {
+			ClienteDTO novoCliente = clienteService.criar(clienteDTO);
+			
+			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(novoCliente.getId()).toUri();
+			return ResponseEntity.created(uri).body(clienteDTO);
+		} catch(EmailException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@PutMapping("/{id}")
@@ -95,8 +98,8 @@ public class ClienteController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<ClienteLogadoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteLogadoDTO clienteLogadoDTO) {
-		ClienteLogadoDTO clienteAtualizado = clienteService.atualizar(id, clienteLogadoDTO);
+	public ResponseEntity<?> atualizar(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
+		ClienteDTO clienteAtualizado = clienteService.atualizar(id, cliente);
 		
 		if (clienteAtualizado == null) {
 			return ResponseEntity.notFound().build();
@@ -119,6 +122,7 @@ public class ClienteController {
 		if (!clienteService.deletar(id)) {
 			return ResponseEntity.notFound().build();
 		}
+		clienteService.deletar(id);
 		return ResponseEntity.noContent().build();
 	}
 

@@ -13,22 +13,20 @@ public class ClienteLogadoDTO {
 	private String sobrenome;
 	private LocalDate dataNascimento;
 	private String email;
-	private String cpf;
-	private String senha;
 	private Endereco endereco;
 	private List<Pedido> pedidos;
 
 	public ClienteLogadoDTO() {
 	}
 
-	public ClienteLogadoDTO(String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf, String senha, Endereco endereco, List<Pedido> pedidos) {
-		super();
+	public ClienteLogadoDTO(String nome, String sobrenome, LocalDate dataNascimento, String email, Endereco endereco,
+			List<Pedido> pedidos) {
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.dataNascimento = dataNascimento;
 		this.email = email;
-		this.cpf = cpf;
-		this.senha = senha;
+		this.endereco = endereco;
+		this.pedidos = pedidos;
 	}
 
 	public ClienteLogadoDTO(Cliente cliente) {
@@ -36,8 +34,7 @@ public class ClienteLogadoDTO {
 		this.sobrenome = cliente.getSobrenome();
 		this.dataNascimento = cliente.getDataNascimento();
 		this.email = cliente.getEmail();
-		this.cpf = cliente.getCpf();
-		this.senha = cliente.getSenha();
+		this.pedidos = cliente.getPedidos();
 	}
 
 	public String getNome() {
@@ -72,28 +69,12 @@ public class ClienteLogadoDTO {
 		this.email = email;
 	}
 
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
 	public Endereco getEndereco() {
 		return endereco;
 	}
 
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
-	}
-
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
 	}
 
 	public List<Pedido> getPedidos() {
@@ -103,7 +84,6 @@ public class ClienteLogadoDTO {
 	public void setPedidos(List<Pedido> pedidos) {
 		this.pedidos = pedidos;
 	}
-	
 	
 	public List<ClienteLogadoDTO> convert (List<Cliente> clientes) {
 		List<ClienteLogadoDTO> clienteLogDTO = new ArrayList<>();

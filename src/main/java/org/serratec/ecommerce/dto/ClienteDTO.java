@@ -1,11 +1,9 @@
 package org.serratec.ecommerce.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.serratec.ecommerce.domain.Cliente;
 import org.serratec.ecommerce.domain.Endereco;
-import org.serratec.ecommerce.domain.Pedido;
 
 public class ClienteDTO {
 	private Long id;
@@ -14,23 +12,23 @@ public class ClienteDTO {
 	private LocalDate dataNascimento;
 	private String email;
 	private String cpf;
+	private String senha;
 	private Endereco endereco;
-	private List<Pedido> pedidos;
 	
 	public ClienteDTO() {
 		
 	}
-	
+
 	public ClienteDTO(Long id, String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf,
-			Endereco endereco, List<Pedido> pedidos) {
+			String senha, Endereco endereco) {
 		this.id = id;
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.dataNascimento = dataNascimento;
 		this.email = email;
 		this.cpf = cpf;
+		this.senha = senha;
 		this.endereco = endereco;
-		this.pedidos = pedidos;
 	}
 
 	public ClienteDTO(Cliente cliente) {
@@ -40,8 +38,8 @@ public class ClienteDTO {
 		this.dataNascimento = cliente.getDataNascimento();
 		this.email = cliente.getEmail();
 		this.cpf = cliente.getCpf();
+		this.senha = cliente.getSenha();  
 		this.endereco = cliente.getEndereco();
-		this.pedidos = cliente.getPedidos();
 	}
 
 	public Long getId() {
@@ -100,11 +98,11 @@ public class ClienteDTO {
 		this.endereco = endereco;
 	}
 
-	public List<Pedido> getPedidos() {
-		return pedidos;
+	public String getSenha() {
+		return senha;
 	}
 
-	public void setPedidos(List<Pedido> pedidos) {
-		this.pedidos = pedidos;
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 }

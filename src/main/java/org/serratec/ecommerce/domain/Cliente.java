@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +16,6 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -30,10 +30,12 @@ public class Cliente {
 	private Long id;
 	
 	@NotBlank(message = "Nome não pode ser vazio" )
+	@Column(nullable = false)
 	@ApiModelProperty(value = "Nome do cliente", required = true)
 	private String nome;
 	
 	@NotBlank(message = "Sobrenome não pode ser vazio" )
+	@Column(nullable = false)
 	@ApiModelProperty(value = "Sobrenome do cliente", required = true)
 	private String sobrenome;
 	
@@ -53,11 +55,10 @@ public class Cliente {
 	private String cpf;
 	
 	@NotBlank(message = "Senha não pode ser vazio")
-	@Size(min=6, max=10, message = "Senha deve ter entre {min} e {max} números.")
 	@ApiModelProperty(value = "Senha do cliente", required = true)
 	private String senha;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_endereco")
 	@ApiModelProperty(value = "Endereço do cliente", required = true)
 	private Endereco endereco;

@@ -1,17 +1,18 @@
 package org.serratec.ecommerce.controller;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.serratec.ecommerce.domain.Categoria;
+import org.serratec.ecommerce.dto.CategoriaDTO;
+import org.serratec.ecommerce.exception.CategoriaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.serratec.ecommerce.service.CategoriaService;
 
 import io.swagger.annotations.ApiOperation;
@@ -45,9 +46,8 @@ public class CategoriaController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<List<Categoria>> obterTodos() {
-		List<Categoria> categorias = categoriaService.obterTodos();
-		return ResponseEntity.ok(categorias);
+	public ResponseEntity<List<CategoriaDTO>> obterTodos() {
+		return ResponseEntity.ok(categoriaService.obterTodos());
 	}
 	
 	@GetMapping("/{nome}")
@@ -60,12 +60,11 @@ public class CategoriaController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Categoria> buscar(@PathVariable String nome) {
-		Optional<Categoria> categoria = categoriaService.buscar(nome);
-		if (categoria.isPresent()) {
-			return ResponseEntity.ok(categoria.get());
+	public ResponseEntity<CategoriaDTO> buscar(@PathVariable String nome) {
+		if (categoriaService.buscar(nome) == null) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(categoriaService.buscar(nome));
 	}
 
 	@PostMapping
@@ -79,19 +78,22 @@ public class CategoriaController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria) {
-		Categoria categoriaSalva = categoriaService.criar(categoria);
-		
-		URI uri = null;
+	public ResponseEntity<?> criar(@Valid @RequestBody Categoria categoria) {
 		try {
-			uri = new URI("/api/categoria/" + categoriaSalva.getNome());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			CategoriaDTO categoriaDTO = categoriaService.criar(categoria);
+			
+			URI uri = ServletUriComponentsBuilder
+					.fromCurrentRequest()
+					.path("/{nome}").buildAndExpand(categoriaDTO.getNome())
+					.toUri();
+			return ResponseEntity.created(uri).body(categoriaDTO);
+		} catch (CategoriaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		return ResponseEntity.created(uri).body(categoriaSalva);	
 	}
 
 	@PutMapping("/{nome}")
+	@PreAuthorize("hasRole('admin')")
 	@ApiOperation(value = "Atualiza os dados da categoria", notes = "Atualizar categoria")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Categoria atualizada com sucesso"),
@@ -101,17 +103,18 @@ public class CategoriaController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Categoria> atualizar(@PathVariable String nome, @Valid @RequestBody Categoria categoria) {
-		Categoria categoriaAtualizada = categoriaService.atualizar(nome, categoria);
-		if (categoriaAtualizada == null) {
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<?> atualizar(@PathVariable String nome, @Valid @RequestBody Categoria categoria) {
+		try {
+			CategoriaDTO categoriaAtualizada = categoriaService.atualizar(nome, categoria);
+			return ResponseEntity.ok(categoriaAtualizada);
+		} catch (CategoriaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		
-		return ResponseEntity.ok(categoriaAtualizada);
 	}
 	
 	@Transactional
 	@DeleteMapping("/{nome}")
+	@PreAuthorize("hasRole('admin')")
 	@ApiOperation(value = "Deleta uma categoria", notes = "Deletar categoria")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 204, message = "Categoria deletada com sucesso"),
@@ -121,10 +124,11 @@ public class CategoriaController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Categoria> deletar(@PathVariable String nome) {
+	public ResponseEntity<CategoriaDTO> deletar(@PathVariable String nome) {
 		if(!categoriaService.deletar(nome)) {
 			return ResponseEntity.notFound().build();
 		}
+		categoriaService.deletar(nome);
 		return ResponseEntity.noContent().build();	
 	}
 

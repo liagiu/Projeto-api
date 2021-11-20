@@ -24,7 +24,7 @@ public class ClienteService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public List<ClienteLogadoDTO> listar(){
+    public List<ClienteLogadoDTO> obterTodos(){
         List<ClienteLogadoDTO> clientesDTO = new ArrayList<ClienteLogadoDTO>();
         List<Cliente> clientes = clienteRepository.findAll();
         
@@ -33,48 +33,42 @@ public class ClienteService {
             clientesDTO.add(clienteDTO);
         }
         return clientesDTO;
-  }
+    } 
 
-    public List<Cliente> obterTodos() {
-        return clienteRepository.findAll();
+    public ClienteLogadoDTO buscar(Long id) {
+    	Optional<Cliente> cliente = clienteRepository.findById(id);
+		if (cliente.isPresent()) {
+			return new ClienteLogadoDTO(cliente.get());
+		}
+		return null;
     }
 
-    public Optional<Cliente> buscar(Long id) {
-        return clienteRepository.findById(id);
-    }
-
-    public ClienteDTO criar(ClienteLogadoDTO clienteLogadoDTO) throws EmailException {
+    public ClienteDTO criar(ClienteDTO clienteDTO) throws EmailException {
+    	Optional<Cliente> novoCliente = clienteRepository.findByEmail(clienteDTO.getEmail());
         
-        if (clienteRepository.findByEmail(clienteLogadoDTO.getEmail()) != null) {
-            throw new EmailException("E-mail existente.");
+    	if (novoCliente.isPresent()) {
+            throw new EmailException("E-mail já cadastrado.");
         }
         
         Cliente cliente = new Cliente();
-            cliente.setNome(clienteLogadoDTO.getNome());
-            cliente.setSobrenome(clienteLogadoDTO.getSobrenome());
-            cliente.setDataNascimento(clienteLogadoDTO.getDataNascimento());
-            cliente.setEmail(clienteLogadoDTO.getEmail());
-            cliente.setCpf(clienteLogadoDTO.getCpf());
-            cliente.setSenha(passwordEncoder.encode(clienteLogadoDTO.getSenha()));
+            cliente.setNome(clienteDTO.getNome());
+            cliente.setSobrenome(clienteDTO.getSobrenome());
+            cliente.setDataNascimento(clienteDTO.getDataNascimento());
+            cliente.setEmail(clienteDTO.getEmail());
+            cliente.setCpf(clienteDTO.getCpf());
+            cliente.setSenha(passwordEncoder.encode(clienteDTO.getSenha()));
             cliente = clienteRepository.save(cliente);
         
         return new ClienteDTO(cliente);
     }
 
-    public ClienteLogadoDTO atualizar(Long id, @Valid ClienteLogadoDTO clienteLogadoDTO) {
+    public ClienteDTO atualizar(Long id, @Valid Cliente cliente) {
         if (!clienteRepository.existsById(id)) {
             return null;
         }
-        Cliente cliente = new Cliente();
-        cliente.setNome(clienteLogadoDTO.getNome());
-        cliente.setSobrenome(clienteLogadoDTO.getSobrenome());
-        cliente.setDataNascimento(clienteLogadoDTO.getDataNascimento());
-        cliente.setEmail(clienteLogadoDTO.getEmail());
-        cliente.setCpf(clienteLogadoDTO.getCpf());
-        cliente.setSenha(passwordEncoder.encode(clienteLogadoDTO.getSenha()));
+        cliente.setId(id);
         cliente = clienteRepository.save(cliente);
-    
-    return new ClienteLogadoDTO(cliente);
+        return new ClienteDTO(cliente);
     }
 
     public boolean deletar(Long id) {
