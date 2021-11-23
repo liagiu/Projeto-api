@@ -1,2 +1,2 @@
-web: java -jar target/ecommerce-0.0.1-SNAPSHOT.jar
+web: java -cp src/main/java/* org.serratec.ecommerce.EcommerceApplication
 heroku ps:scale worker=1
