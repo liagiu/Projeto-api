@@ -87,9 +87,6 @@
 		        <version>3.0.3</version>
 		        <configuration>
 					<appName>serratec-projetoapi-turma07-g2</appName>
-					<processTypes>
-     					<web>java $JAVA_OPTS -cp target/classes/:target/dependency/* org.serratec,ecommerce.EcommerceApplication</web>
-  					</processTypes>
 				</configuration>
      	 	</plugin>
 		</plugins>
