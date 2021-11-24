@@ -3,6 +3,7 @@ package org.serratec.ecommerce.dto;
 import org.serratec.ecommerce.domain.Endereco;
 
 public class EnderecoDTO {
+	private Long id;
 	private String rua;
 	private String numero;
 	private String complemento;
@@ -15,8 +16,9 @@ public class EnderecoDTO {
 	public EnderecoDTO(){
 	}
 
-	public EnderecoDTO(String rua, String numero, String complemento, String bairro, String cidade, String estado,
+	public EnderecoDTO(Long id, String rua, String numero, String complemento, String bairro, String cidade, String estado,
 			String pais, String cep) {
+		this.id = id;
 		this.rua = rua;
 		this.numero = numero;
 		this.complemento = complemento;
@@ -28,6 +30,7 @@ public class EnderecoDTO {
 	}
 	
 	public EnderecoDTO(Endereco endereco) {
+		this.id = endereco.getId();
 		this.rua = endereco.getRua();
 		this.numero = endereco.getNumero();
 		this.complemento = endereco.getComplemento();
@@ -36,6 +39,14 @@ public class EnderecoDTO {
 		this.estado = endereco.getEstado();
 		this.pais = endereco.getPais();
 		this.cep = endereco.getCep();
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getRua() {

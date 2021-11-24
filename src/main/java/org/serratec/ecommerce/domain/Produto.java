@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,7 +23,6 @@ public class Produto {
     @ApiModelProperty(value = "Identificador único do produto")
     private Long id;
     
-    
     @NotBlank(message = "Nome não pode ser vazio" )
     @ApiModelProperty(value = "Nome do produto", required = true)
     private String nome;
@@ -30,11 +30,17 @@ public class Produto {
     @ApiModelProperty(value = "Descrição do produto", required = true)
     private String descricao;
     
+	@PositiveOrZero(message = "Insira um valor válido")
     @NotBlank(message = "Valor não pode ser vazio" )
     @Min(value = 0, message = "Valor não pode ser negativo")
     @ApiModelProperty(value = "Valor unitário do produto", required = true)
     private Double valor;
     
+	@NotBlank(message = "Quantidade em estoque não pode ser vazio")
+	@Column(name = "qtd_estoque")
+	@ApiModelProperty(value = "Quantidade de estoque do produto")
+	private Integer qtdEstoque;
+	
     @ManyToOne
     @JoinColumn(name = "id_categoria")
     private Categoria categoria;
@@ -42,11 +48,12 @@ public class Produto {
     public Produto() {    
     }
     
-    public Produto(Long id, String nome, String descricao, Double valor, Categoria categoria) {
+    public Produto(Long id, String nome, String descricao, Double valor, Integer qtdEstoque, Categoria categoria) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.valor = valor;
+        this.qtdEstoque = qtdEstoque;
         this.categoria = categoria;
     }
 
@@ -82,7 +89,15 @@ public class Produto {
         this.valor = valor;
     }
 
-    public Categoria getCategoria() {
+    public Integer getQtdEstoque() {
+		return qtdEstoque;
+	}
+
+	public void setQtdEstoque(Integer qtdEstoque) {
+		this.qtdEstoque = qtdEstoque;
+	}
+
+	public Categoria getCategoria() {
         return categoria;
     }
 

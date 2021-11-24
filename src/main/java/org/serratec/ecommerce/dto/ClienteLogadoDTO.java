@@ -13,19 +13,23 @@ public class ClienteLogadoDTO {
 	private String sobrenome;
 	private LocalDate dataNascimento;
 	private String email;
+	private String nomeUsuario;
 	private Endereco endereco;
+	private String fotoPerfil;
 	private List<Pedido> pedidos;
 
 	public ClienteLogadoDTO() {
 	}
 
-	public ClienteLogadoDTO(String nome, String sobrenome, LocalDate dataNascimento, String email, Endereco endereco,
+	public ClienteLogadoDTO(String nome, String sobrenome, LocalDate dataNascimento, String email, String nomeUsuario, Endereco endereco, String fotoPerfil,
 			List<Pedido> pedidos) {
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.dataNascimento = dataNascimento;
 		this.email = email;
+		this.nomeUsuario = nomeUsuario;
 		this.endereco = endereco;
+		this.fotoPerfil = fotoPerfil;
 		this.pedidos = pedidos;
 	}
 
@@ -34,6 +38,8 @@ public class ClienteLogadoDTO {
 		this.sobrenome = cliente.getSobrenome();
 		this.dataNascimento = cliente.getDataNascimento();
 		this.email = cliente.getEmail();
+		this.nomeUsuario = cliente.getNomeUsuario();
+		this.endereco = cliente.getEndereco();
 		this.pedidos = cliente.getPedidos();
 	}
 
@@ -69,12 +75,28 @@ public class ClienteLogadoDTO {
 		this.email = email;
 	}
 
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario) {
+		this.nomeUsuario = nomeUsuario;
+	}
+
 	public Endereco getEndereco() {
 		return endereco;
 	}
 
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
+	}
+
+	public String getFotoPerfil() {
+		return fotoPerfil;
+	}
+
+	public void setFotoPerfil(String fotoPerfil) {
+		this.fotoPerfil = fotoPerfil;
 	}
 
 	public List<Pedido> getPedidos() {

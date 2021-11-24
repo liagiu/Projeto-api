@@ -13,23 +13,23 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class SwaggerConfig {
-
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("org.serratec.ecommerce"))
 				.paths(PathSelectors.any())
-				.build();
-		        
+				.build().apiInfo(apiInfo()); 
 	}
-	public ApiInfo apiInfo() {
+	
+	private ApiInfo apiInfo() {
 		ApiInfo apiInfo = new ApiInfoBuilder()
-				.title("ECOMMERCE API")
-				.description("Projeto de conclusao de RestApi")
-				.license("Serratec v.1")
-				.version("1.0.0")
-				.contact(new Contact("serratec","www.serratec.org.br", "teste@rmail.com") )
+				.title("Trabalho Final Api")
+				.description("Projeto de api ")
+				.license("Apache 2.0")
+				.licenseUrl("serratec-projetoapi-turma07-g2.herokuapp.com")
+				.version("2.0 Professional")
+				.contact(new Contact("Serratec", "http://serratec.org", "serratecprojetofinal2@gmail.com"))
 				.build();
 		return apiInfo;
 	}

@@ -12,7 +12,9 @@ public class ClienteDTO {
 	private LocalDate dataNascimento;
 	private String email;
 	private String cpf;
+	private String nomeUsuario;
 	private String senha;
+	private String fotoPerfil;
 	private Endereco endereco;
 	
 	public ClienteDTO() {
@@ -20,16 +22,20 @@ public class ClienteDTO {
 	}
 
 	public ClienteDTO(Long id, String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf,
-			String senha, Endereco endereco) {
+			String nomeUsuario, String senha, String fotoPerfil, Endereco endereco) {
 		this.id = id;
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.dataNascimento = dataNascimento;
 		this.email = email;
 		this.cpf = cpf;
+		this.nomeUsuario = nomeUsuario;
 		this.senha = senha;
+		this.fotoPerfil = fotoPerfil;
 		this.endereco = endereco;
 	}
+
+
 
 	public ClienteDTO(Cliente cliente) {
 		this.id = cliente.getId();
@@ -96,6 +102,22 @@ public class ClienteDTO {
 
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
+	}
+
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario) {
+		this.nomeUsuario = nomeUsuario;
+	}
+
+	public String getFotoPerfil() {
+		return fotoPerfil;
+	}
+
+	public void setFotoPerfil(String fotoPerfil) {
+		this.fotoPerfil = fotoPerfil;
 	}
 
 	public String getSenha() {

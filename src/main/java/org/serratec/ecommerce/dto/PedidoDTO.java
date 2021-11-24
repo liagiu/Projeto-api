@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.serratec.ecommerce.domain.Pedido;
 
 public class PedidoDTO {
+	private Long id;
 	private LocalDateTime dataPedido;
 	private Double valorTotal;
 	private LocalDateTime dataEnvio;
@@ -15,8 +16,9 @@ public class PedidoDTO {
 	public PedidoDTO() {	
 	}
 
-	public PedidoDTO(LocalDateTime dataPedido, Double valorTotal, LocalDateTime dataEnvio, LocalDateTime dataEntrega,
+	public PedidoDTO(Long id, LocalDateTime dataPedido, Double valorTotal, LocalDateTime dataEnvio, LocalDateTime dataEntrega,
 			String status, ClienteDTO clienteDTO) {
+		this.id = id;
 		this.dataPedido = dataPedido;
 		this.valorTotal = valorTotal;
 		this.dataEnvio = dataEnvio;
@@ -26,12 +28,21 @@ public class PedidoDTO {
 	}
 	
 	public PedidoDTO(Pedido pedido) {
+		this.id = pedido.getId();
 		this.dataPedido = pedido.getDataPedido();
 		this.valorTotal = pedido.getValorTotal();
 		this.dataEnvio = pedido.getDataEnvio();
 		this.dataEntrega = pedido.getDataEntrega();
 		this.status = pedido.getStatus();
 		this.clienteDTO = new ClienteDTO(pedido.getCliente());
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public LocalDateTime getDataPedido() {

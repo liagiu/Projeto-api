@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -54,6 +55,12 @@ public class Cliente {
 	@ApiModelProperty(value = "CPF do cliente", required = true)
 	private String cpf;
 	
+	@NotBlank(message = "Nome de usuário não pode ser vazio")
+	@Size(max = 30, message = "Nome de usuário não pode ter mais de {max} caracteres")
+	@Column(name = "nome_usuario")
+	@ApiModelProperty(value = "Define o nome de usuário de um cliente ")
+	private String nomeUsuario;
+	
 	@NotBlank(message = "Senha não pode ser vazio")
 	@ApiModelProperty(value = "Senha do cliente", required = true)
 	private String senha;
@@ -67,18 +74,18 @@ public class Cliente {
 	@ApiModelProperty(value = "Lista de pedidos efetuados pelo cliente", required = true)
 	private List<Pedido> pedidos;
 
-	
-	
 	public Cliente() {
 	}
 
-	public Cliente(Long id, String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf, Endereco endereco, List<Pedido> pedidos) {
+	public Cliente(Long id, String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf, String nomeUsuario, String senha, Endereco endereco, List<Pedido> pedidos) {
 		this.id = id;
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.dataNascimento = dataNascimento;
 		this.email = email;
 		this.cpf = cpf;
+		this.nomeUsuario = nomeUsuario;
+		this.senha = senha;
 		this.endereco = endereco;
 		this.pedidos = pedidos;
 	}
@@ -121,6 +128,14 @@ public class Cliente {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario) {
+		this.nomeUsuario = nomeUsuario;
 	}
 
 	public String getCpf() {

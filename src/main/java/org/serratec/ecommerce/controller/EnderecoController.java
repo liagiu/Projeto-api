@@ -1,13 +1,12 @@
 package org.serratec.ecommerce.controller;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.serratec.ecommerce.domain.Endereco;
+import org.serratec.ecommerce.dto.EnderecoDTO;
 import org.serratec.ecommerce.service.EnderecoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -42,9 +42,8 @@ public class EnderecoController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<List<Endereco>> obterTodos() {
-		List<Endereco> enderecos = enderecoService.obterTodos();
-		return ResponseEntity.ok(enderecos);
+	public ResponseEntity<List<EnderecoDTO>> obterTodos() {
+		return ResponseEntity.ok(enderecoService.obterTodos());
 	}
 	
 	@GetMapping("/{id}")
@@ -57,12 +56,11 @@ public class EnderecoController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Endereco> buscar(@PathVariable Long id) {
-		Optional<Endereco> endereco = enderecoService.buscar(id);
-		if (endereco.isPresent()) {
-			return ResponseEntity.ok(endereco.get());
+	public ResponseEntity<EnderecoDTO> buscar(@PathVariable Long id) {
+		if (enderecoService.buscar(id) == null) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(enderecoService.buscar(id));
 	}
 	
 	@PostMapping
@@ -76,16 +74,14 @@ public class EnderecoController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Endereco> criar(@Valid @RequestBody Endereco endereco) {
-		Endereco enderecoSalvo = enderecoService.criar(endereco);
-		
-		URI uri = null;
-		try {
-			uri = new URI("/api/endereco/" + enderecoSalvo.getId());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return ResponseEntity.created(uri).body(enderecoSalvo);
+	public ResponseEntity<?> criar(@Valid @RequestBody Endereco endereco) {
+		EnderecoDTO enderecoDTO = enderecoService.criar(endereco);
+			
+		URI uri = ServletUriComponentsBuilder
+					.fromCurrentRequest()
+					.path("/{id}").buildAndExpand(enderecoDTO.getId())
+					.toUri();
+		return ResponseEntity.created(uri).body(enderecoDTO);
 	}
 	
 	@PutMapping("/{id}")
@@ -98,8 +94,8 @@ public class EnderecoController {
 			@ApiResponse(code = 500, message = "Erro no servidor"),
 			@ApiResponse(code = 505, message = "Ocorreu uma exceção")
 	})
-	public ResponseEntity<Endereco> atualizar(@PathVariable Long id, @Valid @RequestBody Endereco endereco) {
-		Endereco enderecoAtualizado = enderecoService.atualizar(id, endereco);
+	public ResponseEntity<?> atualizar(@PathVariable Long id, @Valid @RequestBody Endereco endereco) {
+		EnderecoDTO enderecoAtualizado = enderecoService.atualizar(id, endereco);
 		
 		if (enderecoAtualizado == null) {
 			return ResponseEntity.notFound().build();
@@ -122,6 +118,7 @@ public class EnderecoController {
 		if (!enderecoService.deletar(id)) {
 			return ResponseEntity.notFound().build();
 		}
+		enderecoService.deletar(id);
 		return ResponseEntity.noContent().build();
 	}
 }

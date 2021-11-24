@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -51,7 +50,6 @@ public class Endereco {
 	
 	@NotBlank(message = "CEP não pode ser vazio" )
 	@Size(max=9, message = "Número de caracteres excedido")
-	@Pattern(regexp="^\\d{5}[-]?\\d{3}$")
 	@ApiModelProperty(value = "CEP do cliente", required = true)
 	private String cep;
 	
